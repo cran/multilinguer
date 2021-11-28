@@ -6,8 +6,9 @@
 \alias{multilinguer-package}
 \title{multilinguer: Gentle Language Installer for R User}
 \description{
-Provides install functions of other languages 
-             such as 'java', 'python' for windows and macos.
+\if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
+
+Provides install functions of other languages such as 'java', 'python' for windows and macos.
 }
 \seealso{
 Useful links:

@@ -1,4 +1,4 @@
-#' Install conda
+#' Install miniconda
 #'
 #' @details
 #' Download the [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
@@ -11,8 +11,13 @@
 #' }
 #' @export
 install_conda <- function() {
-  message("Please install reticulate(>= 1.14) package and use install_miniconda() function.")
+  message("If you want to install with params, please use reticulate package diractly.")
+  post_process("install.packages('reticulate');reticulate::install_miniconda()")
 }
+
+#' @rdname install_conda
+#' @export
+install_miniconda <- install_conda
 
 #' install `java`
 #'
@@ -27,14 +32,16 @@ install_conda <- function() {
 #' }
 #' @export
 install_java <- function() {
-  os <-  get_os()
-  dest <- crt_dest_loc()
-  crt_download(os, dest)
-  loc <- crt_path(os)
-  crt_unc(os, dest, exdir = loc)
-  set_java_home(os)
+  dest <- download_corretto()
+  loc <- crt_path()
+  message(paste("JDK will located at", loc))
+  crt_unc(dest, exdir = loc)
+  set_java_home()
+  message(paste("ENV will set"))
+  message(paste("JAVA_HOME=", Sys.getenv("JAVA_HOME")))
+  message(paste("PATH=", Sys.getenv("PATH")))
   post_process(
-    "install.packages('rJava', type = 'binary');library(rJava);.jinit();rstudioapi::restartSession()"
+    "install.packages('rJava');library(rJava);.jinit();rstudioapi::restartSession()"
   )
 }
 

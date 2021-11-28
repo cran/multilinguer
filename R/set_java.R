@@ -1,56 +1,62 @@
-set_java_home <- function(os, ...) {
-  UseMethod("set_java_home")
+setx <- function(key = "", value = "") {
+  sys::exec_wait("setx", args = c(key, value), std_out = F)
 }
 
-set_java_home.default <- function(os) {
-  stop("no method for ", class(os)[1L])
-}
-
-set_java_home.Darwinx64 <- function(os) {
-  invisible(os)
+set_java_home <- function(path = "") {
+  if (grepl("Windows", get_os())) {
+    winsetjavahome(path)
+  } else if (grepl("Linux", get_os())) {
+    linuxsetjavahome()
+  }
 }
 
 #' @importFrom usethis write_union
-#' @importFrom fs path path_home_r
-set_java_home.Windowsx64 <- function(os, path = "") {
+#' @importFrom fs path path_home dir_ls
+linuxsetjavahome <- function(path = "") {
   if (path == "") {
-    path <- fs::dir_ls(crt_path(os))[1]
+    path <- fs::dir_ls(crt_path())
   }
-  if (length(path) == 0) {
-    stop("There's empty. Please install java first.")
+  usethis::write_union(fs::path(fs::path_home(), ".profile"), paste0("export JAVA_HOME=", path))
+  usethis::write_union(fs::path(fs::path_home(), ".profile"), paste0("export JRE_HOME=", path, "/jre"))
+  usethis::write_union(fs::path(fs::path_home(), ".profile"), paste0("export PATH=$PATH:", path,"/bin"))
+  Sys.setenv("JAVA_HOME" = paste0(path))
+  Sys.setenv("JRE_HOME" = paste0(path,"/jre"))
+  Sys.setenv("PATH" = paste0("$PATH:", path,"/bin"))
+}
+
+#' @importFrom usethis write_union
+#' @importFrom fs path dir_ls
+winsetjavahome <- function(path = "") {
+  if (path == "") {
+    path <- fs::dir_ls(crt_path())
   }
   res <- setx("JAVA_HOME", path)
+  Sys.setenv("JAVA_HOME" = path)
   paths <- paste0("%JAVA_HOME%\\bin;", Sys.getenv("path"))
   paths <- unique(strsplit(paths, ";")[[1]])
   paths <- paths[nchar(paths) > 0]
   paths <- paste0(paths, collapse = ";")
   res <- setx("path", paths)
-  forenvron <- paste0('JAVA_HOME=', path)
-  usethis::write_union(fs::path(fs::path_home_r(), "/", ext = "Renviron"), forenvron)
+  Sys.setenv("PATH" = paths)
 }
 
-set_java_home.Windowsx86 <- set_java_home.Windowsx64
 
-crt_path <- function(os) {
-  UseMethod("crt_path")
+crt_path <- function() {
+  if (grepl("Darwin", get_os())) {
+    fs::path("/Library/Java/JavaVirtualMachines/")
+  } else {
+    if (is_ascii(fs::path_home())) {
+      fs::path(fs::path_home(), ".corretto")
+    } else {
+      fs::path("c://multilinguer/.corretto")
+    }
+
+  }
 }
 
-crt_path.default <- function(os) {
-  stop("no method for ", class(os)[1L])
-}
-
-crt_path.Windowsx86 <- function(os) {
-  fs::path(fs::path_home(), "corretto")
-}
-
-crt_path.Windowsx64 <- function(os) {
-  fs::path(fs::path_home(), "corretto")
-}
-
-crt_path.Darwinx64 <- function(os) {
-  fs::path("/Library/Java/JavaVirtualMachines/")
-}
-
-setx <- function(key = "", value = "") {
-  sys::exec_wait("setx", args = c(key, value), std_out = F)
+## copy from xfun package
+is_ascii <- function(x) {
+  out = !is.na(iconv(x, to = "ascii"))
+  out[is.na(x)] = NA
+  out
 }
