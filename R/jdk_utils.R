@@ -14,3 +14,9 @@ java_available <- function() {
     system("java -version") == 0
   }
 }
+
+#' @rdname java_available
+#' @export
+jdk_available <- java_available
+
+

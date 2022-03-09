@@ -1,4 +1,14 @@
-# multilinguer 0.0.7
+# multilinguer 0.2.2
+
+* Fix gui only for mac and win for cran policy.
+
+# multilinguer 0.2.1
+
+* Fix gui only for mac arm64 on jdk_install().
+
+# multilinguer 0.2.0
+
+* Add gui option for windows and macos.
 
 # multilinguer 0.0.6
 
@@ -8,3 +18,4 @@
 
 * [hotfix] Fix download corretto link.
 * Add a `NEWS.md` file to track changes to the package.
+
