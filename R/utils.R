@@ -2,10 +2,6 @@ get_os <- function(){
   return(paste0(Sys.info()["sysname"], Sys.info()["machine"]))
 }
 
-is_solaris <- function(){
-  identical(.Platform$OS.type, "solaris")
-}
-
 # from reticulate package
 #####################################################
 is_interactive <- function() {
@@ -80,8 +76,6 @@ system_sudo_chk <- function(password){
   system(cmd, ignore.stderr = T)
 }
 
-#' @importFrom askpass askpass
-#' @importFrom usethis ui_stop
 ask_password <- function(){
   pw <- askpass::askpass("Please enter your MacOS password for install java:")
   if (is.null(pw)) {

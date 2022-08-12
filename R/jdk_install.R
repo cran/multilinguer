@@ -2,10 +2,11 @@
 #'
 #' @description
 #' Install `openjdk` which is one of openjdk(java) distro.
+#' Case of `MacOS`, remove all java and reinstall `corretto` version 11.
 #'
 #' @param path String; The location where jdk is (or should be) installed. See
 #'   [jdk_path] for more details on the default path used by `multilinguer`.
-#' @param version String; Jdk version. Now only support "11".
+#' @param version String; Jdk version. Now only support "11". check inst/jdk.yaml.
 #' @param gui Boolean; Some jdk supports os native installer. User can use
 #'   the gui when in interactive mode and use `Windows` or `MacOS`.
 #' @param run c("ask","yes","no");If set "yes", installation proccess start. Default is "ask" to user.
@@ -64,10 +65,8 @@ install_jdk <- function(path = jdk_path(),
 
   # download the installer
   usethis::ui_info("Installing JDK -- please wait a moment ...")
-  if (is.null(url)) {
-    usethis::ui_info("Need to add. Please check {usethis::ui_code('jdk_list')}.")
-    usethis::ui_todo("Please report your os and arch on {usethis::ui_path('https://github.com/mrchypark/multilinguer/issues')}")
-  }
+  if (is.null(url))
+    usethis::ui_stop("Unsupported. please check {usethis::ui_code('jdk_list')}.")
   installer <- jdk_installer_download(url, force)
 
   if (gui) {
@@ -76,6 +75,8 @@ install_jdk <- function(path = jdk_path(),
 
     if (grepl("Windows", get_os())) {
       usethis::ui_todo("Plase all windows close and restart for apply the jdk setting.")
+    ## TODO: support quit behavior?
+    ## quit_ask()
     }
   } else {
     jdk_installer_unc(installer, path)
@@ -92,6 +93,18 @@ install_jdk <- function(path = jdk_path(),
     }
     return(path)
   }
+}
+
+quit_ask <- function(){
+  quit <- usethis::ui_yeah("Using jdk requires shutdown and restart rstudio or console. Are you sure you want to shutdown?")
+  if (quit)
+  ## https://stackoverflow.com/questions/38181415/how-to-non-interactively-quit-rstudio-gracefully#comment64998430_38181415
+    if (is_windows())
+      shell('taskkill /F /IM "rstudio.exe" /T ')
+    if (is_unix())
+      system('killall rstudio')
+  else
+    usethis::ui_todo("Plase shutdown for apply the settings.")
 }
 
 #' @rdname install_jdk
@@ -220,7 +233,6 @@ jdk_path <- function() {
   Sys.getenv("MULTILINGUER_JDK_PATH", unset = jdk_path_default())
 }
 
-#' @importFrom rappdirs user_data_dir
 jdk_path_default <- function() {
   if (is_osx()) {
     return(path.expand("/Library/Java/JavaVirtualMachines/"))
@@ -232,7 +244,7 @@ jdk_path_default <- function() {
 
 }
 
-#' @importFrom usethis ui_stop
+
 install_jdk_preflight <- function(path, force) {
   if (force)
     return(invisible(TRUE))

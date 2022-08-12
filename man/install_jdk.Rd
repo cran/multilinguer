@@ -25,7 +25,7 @@ install_java(
 \item{path}{String; The location where jdk is (or should be) installed. See
 \link{jdk_path} for more details on the default path used by \code{multilinguer}.}
 
-\item{version}{String; Jdk version. Now only support "11".}
+\item{version}{String; Jdk version. Now only support "11". check inst/jdk.yaml.}
 
 \item{gui}{Boolean; Some jdk supports os native installer. User can use
 the gui when in interactive mode and use \code{Windows} or \code{MacOS}.}
@@ -36,6 +36,7 @@ the gui when in interactive mode and use \code{Windows} or \code{MacOS}.}
 }
 \description{
 Install \code{openjdk} which is one of openjdk(java) distro.
+Case of \code{MacOS}, remove all java and reinstall \code{corretto} version 11.
 }
 \examples{
 \dontrun{

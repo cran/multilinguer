@@ -25,9 +25,3 @@ Linuxx86_32:
 Linuxarm32:
   "11":
     zip: "https://corretto.aws/downloads/latest/amazon-corretto-11-arm-linux-jdk.tar.gz"
-SunOSX86-64:
-  "11":
-    zip: "https://download.bell-sw.com/java/11.0.14.1+1/bellsoft-jdk11.0.14.1+1-solaris-x64.tar.gz"
-SunOSi86pc:
-  "11":
-    zip: "https://download.bell-sw.com/java/11.0.14.1+1/bellsoft-jdk11.0.14.1+1-solaris-sparcv9.tar.gz"
